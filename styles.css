@@ -1,0 +1,35 @@
+body {
+	background-color: #dddddd;
+}
+
+#banner {
+}
+
+.logo {
+	height: 32px;
+	float: left;
+}
+
+#title {
+	margin-left: 50px;
+	margin-top: 10px;
+}
+
+#contentArea {
+	margin-left: 5%;
+	margin-top: 1%;
+}
+
+.button {
+	margin-left: 200px;
+	margin-top: 0px;
+	font-size: 15px;
+}
+
+.textArea {
+	margin-top: 10px;
+	width: 500px;
+	height: 500px;
+	font-size: 10pt;
+	text-align: left;
+}
