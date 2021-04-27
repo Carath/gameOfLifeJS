@@ -1,75 +1,62 @@
+"use strict";
+
 //////////////////////////////////////////////////
-// Testing:
+// Benchmarking:
 
-function initCells() {
-	// Penta-decathlon (period 15):
-	cells = {};
-	for (let row = 0; row < 3; ++row) {
-		for (let col = 0; col < 8; ++col) {
-			addCell(cells, [col, row]);
-		}
-	}
-
-	cells[key(1, 1)] = false;
-	cells[key(1, 6)] = false;
-
-	// console.log(cells);
-	return cells;
-}
-
-function verify() {
-	let epochsNumber = 30;
-	let cleanupCooldown = 50;
-
-	let cells = initCells();
-	console.log("Alive cells number:", countAliveCells(cells));
+function benchmark() {
 	let t0 = performance.now();
+	let maxEpoch = 50;
+	let drawing = null;
+	// let drawing = preview; // draws in the console.
 
-	run(cells, epochsNumber, cleanupCooldown);
-	// run(cells, epochsNumber, cleanupCooldown, preview);
+	let game = new Game(rules_custom, neighboursKeys_hex, drawing, maxEpoch);
+	addCluster(game);
+	game.run();
 
-	console.log("Alive cells number:", countAliveCells(cells));
 	let t1 = performance.now();
-	console.log("Elapsed time:", (t1 - t0) / 1000., "s");
+	let elapsedTime = (t1 - t0) / 1000.; // in sec
+	textArea.value = "Epoch " + game.epoch + ":\n";
+	textArea.value += "Live cells: " + game.liveCellsNumber + "\n";
+	textArea.value += "Elapsed time: " + elapsedTime + " s";
+	// No killing previous runs here...
 }
 
 //////////////////////////////////////////////////
 // Animation:
 
 const animationCooldown = 500; // in ms
-var isRunning = false;
-var stop = false;
 var textArea = null;
 
 window.onload = function() {
-	// verify(); // OK!
-
 	const restartButton = document.getElementById("restartButton");
 	textArea = document.getElementById("myTextArea");
 	textArea.value = "";
+
 	restartButton.addEventListener('click', function() {
-		animation();
+		let maxEpoch = 30;
+		let game = new Game(rules_Conway, neighboursKeys_3x3, draw, maxEpoch);
+		addPentaDecathlon(game);
+		animation(game);
 	}, false);
+
+	// benchmark(); // runs on page load.
 }
 
-async function animation() {
+async function animation(game) {
 	if (isRunning) {
 		stop = true;
 		console.log("An animation is already running, waiting for it to stop...");
 		window.setTimeout(animation, animationCooldown / 2);
 	} else {
 		stop = false;
-		let epochsNumber = 30;
-		let cleanupCooldown = 50;
-		let cells = initCells();
-		run(cells, epochsNumber, cleanupCooldown, draw);
+		game.run();
 	}
 }
 
-async function draw(cells, epoch) {
-	textArea.value = "Epoch " + epoch + ":\n";
-	textArea.value += "Alive cells number: " + countAliveCells(cells) + "\n";
-	let grid = createGrid(cells, -10, -10, 35, 25);
+async function draw(game) {
+	textArea.value = "Epoch " + game.epoch + ":\n";
+	textArea.value += "Live cells: " + game.liveCellsNumber + "\n";
+	let grid = game.createGrid(-10, -10, 35, 25);
 	textArea.value += stringOfGrid(grid);
 	await sleep(animationCooldown);
 }

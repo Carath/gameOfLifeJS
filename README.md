@@ -21,6 +21,11 @@ The code here uses dictionaries, in order to access and add cells in amortized O
 - Be careful to not manually set a cell to life by doing ``` cells[coord] = true ```, as this will not consider the cell neighbourhood! Use the ``` addCell(cells, coord) ``` function instead.
 
 
+## Try it
+
+Just open the ``` index.html ``` file with any web browser.
+
+
 ## Credits
 
 Logo from <https://en.wikipedia.org>
