@@ -79,7 +79,7 @@ class Game {
 		}
 		// Filling the grid with live cells:
 		for (let key in this.cells) {
-			if (this.cells[key]) {
+			if (this.cells[key] == Status.Live) {
 				let coord = coordFromKey(key);
 				let col = coord[0] - x, row = coord[1] - y;
 				if (0 <= row && row < height && 0 <= col && col < width) {
