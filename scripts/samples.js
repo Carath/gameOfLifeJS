@@ -51,7 +51,7 @@ function addPentaDecathlon(game) { // period 15
 	}
 
 	game.setCell(1, 1, Status.Dead);
-	game.setCell(1, 6, Status.Dead);
+	game.setCell(6, 1, Status.Dead);
 }
 
 function addCluster(game) { // useful for benchmarks
