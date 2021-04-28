@@ -46,23 +46,23 @@ function neighboursKeys_hex(x, y) {
 function addPentaDecathlon(game) { // period 15
 	for (let row = 0; row < 3; ++row) {
 		for (let col = 0; col < 8; ++col) {
-			game.addCell([col, row]);
+			game.setCell(col, row, Status.Live);
 		}
 	}
 
-	game.cells[Key(1, 1)] = false;
-	game.cells[Key(1, 6)] = false;
+	game.setCell(1, 1, Status.Dead);
+	game.setCell(1, 6, Status.Dead);
 }
 
 function addCluster(game) { // useful for benchmarks
-	game.addCell([2, -3]);
-	game.addCell([1, -2]);
-	game.addCell([3, -3]);
-	game.addCell([-3, 3]);
-	game.addCell([-1, 0]);
-	game.addCell([-1, -1]);
-	game.addCell([0, -2]);
-	game.addCell([0, 0]);
-	game.addCell([2, 0]);
-	game.addCell([0, 2]);
+	game.setCell(2, -3, Status.Live);
+	game.setCell(1, -2, Status.Live);
+	game.setCell(3, -3, Status.Live);
+	game.setCell(-3, 3, Status.Live);
+	game.setCell(-1, 0, Status.Live);
+	game.setCell(-1, -1, Status.Live);
+	game.setCell(0, -2, Status.Live);
+	game.setCell(0, 0, Status.Live);
+	game.setCell(2, 0, Status.Live);
+	game.setCell(0, 2, Status.Live);
 }

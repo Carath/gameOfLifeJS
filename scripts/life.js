@@ -22,7 +22,6 @@ class Game {
 		this.maxEpoch = maxEpoch;
 		this.cleanupCooldown = cleanupCooldown;
 		this.liveCellsNumber = 0;
-		this.dictSize = 0;
 		this.origin = [0, 0];
 		this.bound = bound; // when > 0, prevents cells to live farther than this bound from 'this.origin'.
 
@@ -37,8 +36,6 @@ class Game {
 
 	async run() {
 		isRunning = true;
-		this.liveCellsNumber = this._countAliveFromKeys(this.cells, Object.keys(this.cells));
-		this.dictSize = Object.keys(this.cells).length;
 		while (! stop && this.epoch < this.maxEpoch) {
 			if (this.epoch % this.cleanupCooldown == 0) {
 				this._cleanup();
@@ -56,11 +53,21 @@ class Game {
 		isRunning = false;
 	}
 
-	// 'coord' format is [x, y] i.e [col, row]:
-	addCell(coord) {
-		let key = Key(coord[0], coord[1]);
-		let neighbours = this.neighboursKeys(coord[0], coord[1]);
-		this._activate(key, neighbours);
+	setCell(x, y, status) { // (x, y) <=> (col, row)
+		let key = Key(x, y);
+		let currentStatus = this._getStatus(this.cells, key);
+		if (status == Status.Dead && currentStatus == Status.Live) {
+			this.cells[key] = Status.Dead;
+			--this.liveCellsNumber;
+		}
+		else if (status == Status.Live && currentStatus != Status.Live) {
+			this._activate(key, this.neighboursKeys(x, y));
+		}
+	}
+
+	// Number of stored keys. Computed in O(1).
+	mapSize() {
+		return Object.keys(this.cells).length;
 	}
 
 	// Filling a grid with live cells from a rectangle starting from the top left corner (x, y):
@@ -108,12 +115,11 @@ class Game {
 				return;
 			}
 		}
-		this.cells[key] = true;
+		this.cells[key] = Status.Live;
 		++this.liveCellsNumber;
 		for (let i = 0; i < neighbours.length; ++i) {
 			if (! (neighbours[i] in this.cells)) {
-				this.cells[neighbours[i]] = false;
-				++this.dictSize;
+				this.cells[neighbours[i]] = Status.Dead;
 			}
 		}
 	}
@@ -121,7 +127,7 @@ class Game {
 	_updateCell(key, status, count, neighbours) {
 		let r = this.rules(status, count);
 		if (r == StatusChange.Death) { // cell dies, but do not remove it!
-			this.cells[key] = false;
+			this.cells[key] = Status.Dead;
 			--this.liveCellsNumber;
 		}
 		else if (r == StatusChange.Birth) { // cell goes live.
@@ -132,7 +138,6 @@ class Game {
 	_cleanupCell(key, status, count, neighbours) {
 		if (status == Status.Dead && count == 0) {
 			delete this.cells[key];
-			--this.dictSize;
 		}
 	}
 
@@ -140,9 +145,9 @@ class Game {
 	// without creating side effects. Also, note that this is somewhate expensive,
 	// better do it only once in a while to free memory:
 	_cleanup() {
-		let size = this.dictSize;
+		let size = this.mapSize();
 		this._apply((k, s, c, n) => this._cleanupCell(k, s, c, n));
-		console.log("Freed", size - this.dictSize, "cells.");
+		console.log("Freed", size - this.mapSize(), "cells.");
 	}
 
 	// Apply an action simultaneously on each cell, without side effects:
