@@ -92,7 +92,7 @@ class Game {
 
 	_countAliveFromKeys(usedCells, keyList) { // usedCells may be != this.cells!
 		let count = 0;
-		for (let i in keyList) {
+		for (let i = 0; i < keyList.length; ++i) {
 			if (this._getStatus(usedCells, keyList[i]) == Status.Live) {
 				++count;
 			}
@@ -110,7 +110,7 @@ class Game {
 		}
 		this.cells[key] = true;
 		++this.liveCellsNumber;
-		for (let i in neighbours) {
+		for (let i = 0; i < neighbours.length; ++i) {
 			if (! (neighbours[i] in this.cells)) {
 				this.cells[neighbours[i]] = false;
 				++this.dictSize;
