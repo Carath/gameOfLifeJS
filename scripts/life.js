@@ -86,14 +86,14 @@ class Game {
 	//////////////////////////////////////////////////
 	// Private methods:
 
-	_isAlive(usedCells, key) { // usedCells may be != this.cells!
+	_getStatus(usedCells, key) { // usedCells may be != this.cells!
 		return key in usedCells ? usedCells[key] : Status.Dead;
 	}
 
 	_countAliveFromKeys(usedCells, keyList) { // usedCells may be != this.cells!
 		let count = 0;
 		for (let i in keyList) {
-			if (this._isAlive(usedCells, keyList[i])) {
+			if (this._getStatus(usedCells, keyList[i]) == Status.Live) {
 				++count;
 			}
 		}
@@ -147,11 +147,11 @@ class Game {
 
 	// Apply an action simultaneously on each cell, without side effects:
 	_apply(action) {
-		let cellsCopy = {...this.cells}; // deep copy.
+		let cellsCopy = {...this.cells}; // 1st level copy.
 		for (let key in cellsCopy) {
 			let coord = coordFromKey(key);
 			let neighbours = this.neighboursKeys(coord[0], coord[1]);
-			let status = this._isAlive(cellsCopy, key);
+			let status = this._getStatus(cellsCopy, key);
 			let count = this._countAliveFromKeys(cellsCopy, neighbours);
 			action(key, status, count, neighbours);
 		}
